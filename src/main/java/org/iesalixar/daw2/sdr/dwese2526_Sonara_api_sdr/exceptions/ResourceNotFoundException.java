@@ -1,0 +1,21 @@
+package org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.exceptions;
+
+import lombok.Getter;
+
+@Getter
+public class ResourceNotFoundException extends RuntimeException{
+
+    private final String resource;
+
+    private final String field;
+
+    private final Object value;
+
+
+    public ResourceNotFoundException(String resource, String field, Object value){
+        super(resource + " not found (" + field + " = " + ")");
+        this.resource = resource;
+        this.field = field;
+        this.value = value;
+    }
+}
