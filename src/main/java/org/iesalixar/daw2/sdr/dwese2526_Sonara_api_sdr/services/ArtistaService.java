@@ -15,8 +15,8 @@ public interface ArtistaService {
 
     Page<ArtistasDTO> list(Pageable pageable);
     ArtistasUpdateDTO getForEdit(Long id);
-    void create(ArtistasCreateDTO dto);
-    void update(ArtistasUpdateDTO dto);
+    ArtistasDTO create(ArtistasCreateDTO dto);
+    ArtistasDTO update(ArtistasUpdateDTO dto);
     void delete(Long id);
     ArtistasDetailDTO getDetail(Long id);
     List<Genero> findAllGeneros();

@@ -47,16 +47,17 @@ public class ArtistasServiceImpl implements ArtistaService{
     }
 
     @Override
-    public void create(ArtistasCreateDTO dto) {
+    public ArtistasDTO create(ArtistasCreateDTO dto) {
         if (artistasRepository.existsByNombre(dto.getNombre())){
             throw new DuplicateResourceException("artista", "name", dto.getNombre());
         }
         Artista artista = ArtistasMapper.toEntity(dto);
-        artistasRepository.save(artista);
+        artista = artistasRepository.save(artista);
+        return ArtistasMapper.toDTO(artista);
     }
 
     @Override
-    public void update(ArtistasUpdateDTO dto) {
+    public ArtistasDTO update(ArtistasUpdateDTO dto) {
         if (artistasRepository.existsByNombreAndIdNot(dto.getNombre(), dto.getId())){
             throw new DuplicateResourceException("artista", "name", dto.getNombre());
         }
@@ -65,7 +66,8 @@ public class ArtistasServiceImpl implements ArtistaService{
 
 
         ArtistasMapper.copyToExistingEntity(dto,artista);
-        artistasRepository.save(artista);
+        artista = artistasRepository.save(artista);
+        return ArtistasMapper.toDTO(artista);
     }
 
     @Override

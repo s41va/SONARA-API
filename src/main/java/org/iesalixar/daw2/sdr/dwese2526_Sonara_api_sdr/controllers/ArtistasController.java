@@ -17,16 +17,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Locale;
 
 @Controller
-@RequestMapping("/artistas")
+@RequestMapping("/api/artistas")
 public class ArtistasController {
 
     private static final Logger logger = LoggerFactory.getLogger(ArtistasController.class);
@@ -37,35 +40,89 @@ public class ArtistasController {
     @Autowired
     private MessageSource messageSource;
 
-    /**
-     * Lista los artistas con paginación y ordenación.
-     */
-    @GetMapping
-    public String listArtistas(
-            @PageableDefault(size = 10, sort = "nombre", direction = Sort.Direction.ASC) Pageable pageable,
-            Model model) {
 
-        logger.info("Listando artistas page={}, size={}, sort={}",
+    @GetMapping
+    public ResponseEntity<Page<ArtistasDTO>> listArtistas(
+            @PageableDefault(size = 10, sort = "nombre_artistico", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        logger.info("Listando artistas (REST) page={}, size={}, sort={}",
                 pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 
-        try {
-            Page<ArtistasDTO> page = artistaService.list(pageable);
-            model.addAttribute("page", page);
+        // Si aquí salta una excepción, la convertirá el @RestControllerAdvice a un HTTP status adecuado
+        Page<ArtistasDTO> page = artistaService.list(pageable);
 
-            String sortParam = "nombre,asc";
-            if (page.getSort().isSorted()) {
-                Sort.Order order = page.getSort().iterator().next();
-                sortParam = order.getProperty() + "," + order.getDirection().name().toLowerCase();
-            }
-            model.addAttribute("sortParam", sortParam);
+        logger.info("Se han cargado {} artistas en la página {}.",
+                page.getNumberOfElements(), page.getNumber());
 
-        } catch (Exception e) {
-            logger.error("Error al listar los artistas: {}", e.getMessage(), e);
-            model.addAttribute("errorMessage", "Error al listar los artistas.");
-        }
-
-        return "views/artista/artista-list";
+        return ResponseEntity.ok(page);
     }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ArtistasDetailDTO> getArtistaById(@PathVariable Long id){
+        logger.info("Mostrando detalle (REST) de la region con ID{}, ", id);
+
+        ArtistasDetailDTO artistasDetailDTO = artistaService.getDetail(id);
+
+        return ResponseEntity.ok(artistasDetailDTO);
+    }
+
+    @PostMapping
+    public ResponseEntity<ArtistasDTO> createArtista(@Valid @RequestBody ArtistasCreateDTO dto) {
+
+        logger.info("Solicitud REST para crear artista: {}", dto.getNombre());
+
+        // 1) Delegamos la creación al servicio (incluye reglas de negocio y excepciones)
+        ArtistasDTO created = artistaService.create(dto);
+
+        // 2) Construimos la cabecera Location con la URL del recurso recién creado
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getId())
+                .toUri();
+
+        // 3) Respondemos con 201 Created + Location + body con el DTO creado
+        return ResponseEntity.created(location).body(created);
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ArtistasDTO> updateArtista(@PathVariable Long id,
+                                                     @Valid @RequestBody ArtistasUpdateDTO artistaDTO) {
+
+        logger.info("Actualizando artista con ID {} (REST)", id);
+
+        // Buena práctica: asegurar consistencia entre path y body
+        artistaDTO.setId(id);
+
+        ArtistasDTO updated = artistaService.update(artistaDTO);
+
+        logger.info("Artista con ID {} actualizado con éxito.", id);
+
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    //@PreAuthorize("hasRole('ADMIN')") // Comentado hasta que se habilite la seguridad
+    public ResponseEntity<Void> deleteArtista(@PathVariable Long id) {
+
+        logger.info("Eliminando artista (REST) con ID {}", id);
+
+        // 1) Delegamos en el servicio:
+        //    - si existe: elimina
+        //    - si no existe: lanza ResourceNotFoundException (se convertirá a 404 en el @RestControllerAdvice)
+        artistaService.delete(id);
+
+        logger.info("Artista con ID {} eliminado con éxito.", id);
+
+        // 2) En REST, lo habitual en un DELETE correcto es 204 No Content (sin body)
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+
 
     @GetMapping("/new")
     public String showNewForm(Model model) {
