@@ -1,5 +1,3 @@
-
-
 -- TABLA GENERO (Lado ONE de la relación)
 CREATE TABLE IF NOT EXISTS genero (
      id INT AUTO_INCREMENT PRIMARY KEY,
@@ -11,6 +9,7 @@ CREATE TABLE IF NOT EXISTS genero (
 CREATE TABLE IF NOT EXISTS artista (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(50) NOT NULL,
     pais_origen VARCHAR(100),
     descripcion VARCHAR(400),
 

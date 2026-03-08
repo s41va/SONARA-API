@@ -22,6 +22,9 @@ public class Artista {
     @Column(name = "nombre", nullable = false, unique = true, length = 50)
     private String nombre;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @Column(name = "pais_origen",nullable = false, length = 100)
     private String pais;
 
