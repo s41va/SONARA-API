@@ -6,7 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.services.CustomArtistDetailsService;
+import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.services.CustomUserDetailsService;
 import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Autowired
-    private CustomArtistDetailsService userDetailsService;
+    private CustomUserDetailsService userDetailsService;
 
     /**
      * Método principal del filtro que intercepta cada solicitud HTTP entrante

@@ -22,19 +22,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 @Service
 @Transactional
 public class UsuarioServiceImpl implements UsuarioService {
-
 
     @Autowired
     private RolesRepository rolesRepository;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private LocalidadRepository localidadRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -60,26 +57,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         validarFechaNacimiento(dto.getFechaNacimiento());
 
         Usuario usuario = UsuarioMapper.toEntity(dto);
-
         usuario.setContrasenaHash(passwordEncoder.encode(dto.getContrasenaHash()));
 
-        // Validar Localidad
-        Long localidadId = dto.getLocalidadId();
-        Localidad localidad = localidadRepository.findById(localidadId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "localidad", "id", localidadId
-                ));
-        usuario.setLocalidad(localidad);
-
+        // Gestión de Roles
         Set<Roles> roles = new HashSet<>();
         if (dto.getRolesIds() != null) {
             roles = new HashSet<>(rolesRepository.findAllById(dto.getRolesIds()));
         }
-
         usuario.setRoles(roles);
 
         usuario.setFechaRegistro(LocalDateTime.now());
-
         usuario = usuarioRepository.save(usuario);
 
         return UsuarioMapper.toDTO(usuario);
@@ -96,20 +83,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(dto.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", dto.getId()));
 
-        // Validar Localidad
-        Long localidadId = dto.getLocalidadId();
-        Localidad localidad = localidadRepository.findById(localidadId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "localidad", "id", localidadId
-                ));
-        usuario.setLocalidad(localidad);
-
+        // Gestión de Roles
         if (dto.getRolesIds() != null) {
             roles = new HashSet<>(rolesRepository.findAllById(dto.getRolesIds()));
         }
         usuario.setRoles(roles);
 
-
+        // Mapeo de datos básicos
         UsuarioMapper.copyToExistingEntity(dto, usuario, roles);
 
         if (dto.getContrasenaHash() != null && !dto.getContrasenaHash().isBlank()) {
@@ -144,7 +124,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private void validarFechaNacimiento(LocalDate fechaNacimiento) {
-
         LocalDate fechaMinima = LocalDate.of(1900, 1, 1);
         LocalDate hoy = LocalDate.now();
 

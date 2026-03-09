@@ -9,8 +9,10 @@ import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.entities.Usuario;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UsuarioMapper {
+
     // Entity -> DTO (listado/tabla básico)
     public static UsuarioDTO toDTO(Usuario entity) {
         if (entity == null) return null;
@@ -20,20 +22,17 @@ public class UsuarioMapper {
         dto.setEmail(entity.getEmail());
         dto.setFechaNacimiento(entity.getFechaNacimiento());
         dto.setFechaRegistro(entity.getFechaRegistro());
-        dto.setGenerosFavoritos(entity.getGenerosFavoritos());
-        dto.setLocalidadNombre(entity.getLocalidad() != null ? entity.getLocalidad().getNombreCiudad() : null);
 
         if (entity.getRoles() != null) {
             dto.setRoles(
                     entity.getRoles()
                             .stream()
-                            .map(Roles::getDisplayName) // o getName si quieres nombre técnico
-                            .collect(java.util.stream.Collectors.toSet())
+                            .map(Roles::getDisplayName)
+                            .collect(Collectors.toSet())
             );
         } else {
             dto.setRoles(Set.of());
         }
-
 
         return dto;
     }
@@ -52,15 +51,13 @@ public class UsuarioMapper {
         dto.setEmail(entity.getEmail());
         dto.setFechaNacimiento(entity.getFechaNacimiento());
         dto.setFechaRegistro(entity.getFechaRegistro());
-        dto.setGenerosFavoritos(entity.getGenerosFavoritos());
-        dto.setLocalidadNombre(entity.getLocalidad() != null ? entity.getLocalidad().getNombreCiudad() : null);
 
         if (entity.getRoles() != null) {
             dto.setRoles(
                     entity.getRoles()
                             .stream()
                             .map(Roles::getDisplayName)
-                            .collect(java.util.stream.Collectors.toSet())
+                            .collect(Collectors.toSet())
             );
         } else {
             dto.setRoles(Set.of());
@@ -69,6 +66,7 @@ public class UsuarioMapper {
         return dto;
     }
 
+    // Entity -> DTO para edición
     public static UsuarioUpdateDTO toUpdateDTO(Usuario entity) {
         if (entity == null) return null;
         UsuarioUpdateDTO dto = new UsuarioUpdateDTO();
@@ -77,21 +75,19 @@ public class UsuarioMapper {
         dto.setEmail(entity.getEmail());
         dto.setFechaRegistro(entity.getFechaRegistro());
         dto.setFechaNacimiento(entity.getFechaNacimiento());
-        dto.setGenerosFavoritos(entity.getGenerosFavoritos());
-        dto.setLocalidadId(entity.getLocalidad() != null ? entity.getLocalidad().getId() : null);
 
         if (entity.getRoles() != null) {
             dto.setRolesIds(
                     entity.getRoles()
                             .stream()
                             .map(Roles::getId)
-                            .collect(java.util.stream.Collectors.toSet())
+                            .collect(Collectors.toSet())
             );
         }
         return dto;
     }
 
-    // DTO (Create/Update) -> Entity
+    // DTO (Create) -> Entity
     public static Usuario toEntity(UsuarioCreateDTO dto) {
         if (dto == null) return null;
         Usuario e = new Usuario();
@@ -100,11 +96,10 @@ public class UsuarioMapper {
         e.setContrasenaHash(dto.getContrasenaHash());
         e.setFechaNacimiento(dto.getFechaNacimiento());
         e.setFechaRegistro(dto.getFechaRegistro());
-        e.setGenerosFavoritos(dto.getGenerosFavoritos());
-        // Localidad se debe setear en el service o controller con la entidad correspondiente
         return e;
     }
 
+    // DTO (Update) -> Entity
     public static Usuario toEntity(UsuarioUpdateDTO dto) {
         if (dto == null) return null;
         Usuario e = new Usuario();
@@ -114,11 +109,10 @@ public class UsuarioMapper {
         e.setContrasenaHash(dto.getContrasenaHash());
         e.setFechaNacimiento(dto.getFechaNacimiento());
         e.setFechaRegistro(dto.getFechaRegistro());
-        e.setGenerosFavoritos(dto.getGenerosFavoritos());
-        // Localidad se debe setear en el service o controller con la entidad correspondiente
         return e;
     }
 
+    // DTO (Básico) -> Entity
     public static Usuario toEntity(UsuarioDTO dto) {
         if (dto == null) return null;
         Usuario e = new Usuario();
@@ -126,26 +120,26 @@ public class UsuarioMapper {
         e.setNombre(dto.getNombre());
         e.setEmail(dto.getEmail());
         e.setFechaNacimiento(dto.getFechaNacimiento());
-        e.setGenerosFavoritos(dto.getGenerosFavoritos());
         e.setFechaRegistro(dto.getFechaRegistro());
-        // Localidad se debe setear en el service o controller
         return e;
     }
 
+    // Actualizar entidad existente
     public static void copyToExistingEntity(UsuarioUpdateDTO dto, Usuario entity, Set<Roles> roles) {
         if (dto == null || entity == null) return;
         entity.setNombre(dto.getNombre());
         entity.setEmail(dto.getEmail());
+
         if (dto.getContrasenaHash() != null && !dto.getContrasenaHash().isBlank()) {
             entity.setContrasenaHash(dto.getContrasenaHash());
         }
+
         entity.setFechaNacimiento(dto.getFechaNacimiento());
+
         if (dto.getFechaRegistro() != null) {
             entity.setFechaRegistro(dto.getFechaRegistro());
         }
-        entity.setGenerosFavoritos(dto.getGenerosFavoritos());
-        entity.setRoles(roles);
-        // Localidad se debe setear en el service o controller
-    }
 
+        entity.setRoles(roles);
+    }
 }

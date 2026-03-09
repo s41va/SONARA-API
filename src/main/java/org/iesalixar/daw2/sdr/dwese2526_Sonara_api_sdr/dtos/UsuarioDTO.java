@@ -19,6 +19,7 @@ public class UsuarioDTO {
     private String nombre;
     private String email;
     private String contrasenaHash;
+    private LocalDate fechaNacimiento;
     private Set<String> generosFavoritos;
     private String localidadNombre;
     private LocalDateTime fechaRegistro;

@@ -1,3 +1,70 @@
+CREATE TABLE IF NOT EXISTS usuario (
+    usuario_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE,
+    contrasena_hash VARCHAR(100),
+    fecha_nacimiento DATE,
+    fecha_registro DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS roles (
+                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    -- Nombre técnico que usaremos en Spring Security: ROLE_ADMIN, ROLE_USER...
+                                     name VARCHAR(50) NOT NULL UNIQUE,
+    -- Nombre legible para la interfaz
+    display_name VARCHAR(100) NOT NULL,
+    -- Descripción opcional del rol
+    description VARCHAR(255) NULL
+    );
+
+CREATE TABLE IF NOT EXISTS usuario_roles (
+                                             usuario_id BIGINT NOT NULL,
+                                             rol_id BIGINT NOT NULL,
+                                             CONSTRAINT pk_usuario_roles PRIMARY KEY (usuario_id, rol_id),
+    CONSTRAINT fk_usuario_roles_usuario
+    FOREIGN KEY (usuario_id) REFERENCES usuario(usuario_id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_usuario_roles_rol
+    FOREIGN KEY (rol_id) REFERENCES roles(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+    );
+
+
+
+ CREATE TABLE IF NOT EXISTS usuario_profiles (
+      usuario_id BIGINT NOT NULL,
+      first_name VARCHAR(60) NOT NULL,
+      last_name VARCHAR(80) NOT NULL,
+      phone_number VARCHAR(30) NULL,
+      profile_image VARCHAR(255) NULL,
+      bio VARCHAR(500) NULL,
+      locale VARCHAR(10) NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+          ON UPDATE CURRENT_TIMESTAMP,
+      CONSTRAINT pk_usuario_profiles PRIMARY KEY (usuario_id),
+      CONSTRAINT fk_usuario_profiles_usuario
+          FOREIGN KEY (usuario_id)
+          REFERENCES usuario(usuario_id)
+          ON DELETE CASCADE
+          ON UPDATE CASCADE
+  ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    token_hash VARCHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    created_at DATETIME NOT NULL,
+    request_ip VARCHAR(45) NULL,
+    user_agent VARCHAR(255) NULL,
+    CONSTRAINT fk_prt_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(usuario_id),
+    INDEX idx_prt_usuario_id (usuario_id),
+    INDEX idx_prt_token_hash (token_hash),
+    INDEX idx_prt_expires_at (expires_at)
+) ENGINE=InnoDB;
+
 -- TABLA GENERO (Lado ONE de la relación)
 CREATE TABLE IF NOT EXISTS genero (
      id INT AUTO_INCREMENT PRIMARY KEY,
@@ -9,7 +76,6 @@ CREATE TABLE IF NOT EXISTS genero (
 CREATE TABLE IF NOT EXISTS artista (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
     pais_origen VARCHAR(100),
     descripcion VARCHAR(400),
 

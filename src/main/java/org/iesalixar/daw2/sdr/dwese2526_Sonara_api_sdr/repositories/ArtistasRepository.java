@@ -3,6 +3,7 @@ package org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.repositories;
 import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.entities.Artista;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,8 @@ public interface ArtistasRepository extends JpaRepository<Artista, Long> {
     Optional<Artista> findByNombre(String nombre);
     boolean existsByNombre(String name) ;
     boolean existsByNombreAndIdNot(String name, Long id);
+    //Page<Artista> findAll(Pageable pageable);
+    @Override
     List<Artista> findAll();
 
 

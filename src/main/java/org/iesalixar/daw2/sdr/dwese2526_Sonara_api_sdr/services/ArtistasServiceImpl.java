@@ -9,12 +9,14 @@ import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.entities.Genero;
 import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.exceptions.DuplicateResourceException;
 import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.exceptions.ResourceNotFoundException;
 import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.mappers.ArtistasMapper;
+import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.mappers.UsuarioMapper;
 import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.repositories.ArtistasRepository;
 import org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.repositories.GeneroRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -88,5 +90,13 @@ public class ArtistasServiceImpl implements ArtistaService{
     @Override
     public List<Genero> findAllGeneros() {
         return generoRepository.findAll();
+    }
+
+    @Override
+    public List<ArtistasDTO> listAll(Sort name) {
+        return artistasRepository.findAll(name)
+                .stream()
+                .map(ArtistasMapper::toDTO)
+                .toList();
     }
 }
