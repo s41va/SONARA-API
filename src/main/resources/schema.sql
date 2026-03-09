@@ -90,4 +90,9 @@ CREATE TABLE IF NOT EXISTS artista (
         ON UPDATE CASCADE
 );
 
--- La tabla artista_genero se ELIMINA ya que no es necesaria para 1:N.
+CREATE TABLE IF NOT EXISTS usuario_generos_favoritos (
+    usuario_id BIGINT NOT NULL,
+    genero_favorito VARCHAR(50),
+    PRIMARY KEY (usuario_id, genero_favorito),
+    CONSTRAINT fk_ugf_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(usuario_id)
+);

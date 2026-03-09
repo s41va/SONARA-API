@@ -35,6 +35,11 @@ public class Usuario {
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "usuario_generos_favoritos", joinColumns = @JoinColumn(name = "usuario_id"))
+    @Column(name = "genero_favorito", length = 50)
+    private Set<String> generosFavoritos;
+
     @Column(name = "fecha_registro", nullable = false)
     private LocalDateTime fechaRegistro;
 

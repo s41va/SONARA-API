@@ -45,7 +45,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthResponseDTO> authenticate(@Valid @RequestBody AuthRequestDTO authRequest) {
         // 1) Autenticación (si falla, Spring lanza AuthenticationException y lo gestiona el ApiExceptionHandler)
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
+                    new UsernamePasswordAuthenticationToken(
                         authRequest.getUsername(),
                         authRequest.getPassword()
                 )
