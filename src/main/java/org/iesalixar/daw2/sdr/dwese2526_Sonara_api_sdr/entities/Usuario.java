@@ -1,0 +1,50 @@
+package org.iesalixar.daw2.sdr.dwese2526_Sonara_api_sdr.entities;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Table(name = "usuario")
+public class Usuario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "usuario_id", nullable = false)
+    private Long id;
+
+    @Column(name = "nombre", nullable = false, length = 100)
+    private String nombre;
+
+    @Column(name = "email", nullable = false, unique = true, length = 150)
+    private String email;
+
+    @Column(name = "contrasenaHash", nullable = false, length = 100)
+    private String contrasenaHash;
+
+    @Column(name = "fecha_nacimiento", nullable = false)
+    private LocalDate fechaNacimiento;
+
+    @Column(name = "fecha_registro", nullable = false)
+    private LocalDateTime fechaRegistro;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "usuario_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "rol_id")
+    )
+    private Set<Roles> roles = new HashSet<>();
+
+
+}
